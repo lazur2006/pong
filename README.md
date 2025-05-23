@@ -5,8 +5,10 @@
 *Applied Artificial Intelligence*
 
 ### Please see line 567 and 568
-#QL.runQLearning()  <-- Comment in for training
-QL.rollout()        <-- Comment in for rollout (uses checkpoint file)
+
+(567) #QL.runQLearning()  <-- Comment in for training
+
+(568) QL.rollout()        <-- Comment in for rollout (uses checkpoint file)
 
 |                        |                          |
 | ---------------------- | ------------------------ |
