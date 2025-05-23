@@ -4,6 +4,10 @@
 ### Reinforcement Learning (DLMAIRIL01)  
 *Applied Artificial Intelligence*
 
+### Please see line 567 and 568
+#QL.runQLearning()  <-- Comment in for training
+QL.rollout()        <-- Comment in for rollout (uses checkpoint file)
+
 |                        |                          |
 | ---------------------- | ------------------------ |
 | **Date**               | May 23, 2025             |
