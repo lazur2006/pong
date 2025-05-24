@@ -6,9 +6,9 @@
 
 ### Please see line 567 and 568
 
-(567) #QL.runQLearning()  <-- Comment in for training
+(556) #QL.runQLearning()  <-- Comment in for training
 
-(568) QL.rollout()        <-- Comment in for rollout (uses checkpoint file)
+(557) QL.rollout()        <-- Comment in for rollout (uses checkpoint file)
 
 |                        |                          |
 | ---------------------- | ------------------------ |
