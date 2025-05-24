@@ -100,11 +100,6 @@ class ALE():
         # Register environment
         gym.register_envs(ale_py)
 
-    @numpy_to_torch.register(np.uint32)
-    def _np_uint32_to_torch(value, device=None):
-        # Cast Gymnasium's np.uint32 (np_random_seed) to an int64 tensor to accept the seed as int
-        return torch.tensor(int(value), dtype=torch.int64, device=device)
-
     def setupENV(self):
         # No seed is set
         env = gym.make(
@@ -342,14 +337,14 @@ class QLearning():
 
             # Experience tuples
             (id),(experience) = zip(*minibatch)
-            state, action, reward, next_state, terminated, truncated = zip(*experience)
+            state, action, reward, next_state, terminated = zip(*experience)
 
             # Convert to correct shapes
             state = torch.stack(state).float().to(device)
             action = torch.tensor(action, dtype=torch.long).to(device)
             reward = torch.tensor(reward, dtype=torch.float).to(device)
             next_state = torch.stack(next_state).float().to(device)
-            done = torch.tensor([term or trunc for term, trunc in zip(terminated, truncated)], dtype=torch.float).to(device)
+            done = torch.tensor(terminated, dtype=torch.float).to(device)
 
             # Infer the current Q(s,a;θ) function from online network
             Q_val_fun = self.getQ(state).gather(1, action.unsqueeze(1)).squeeze(1)
@@ -372,7 +367,7 @@ class QLearning():
             with torch.no_grad():
                 # Update experience tuple
                 for idx, e in enumerate(id):
-                    self.experience.storage[e] = (e, (state[idx].detach().cpu(), action[idx].detach().cpu(), reward[idx].detach().cpu(), next_state[idx].detach().cpu(), terminated[idx], truncated[idx]))
+                    self.experience.storage[e] = (e, (state[idx].detach().cpu(), action[idx].detach().cpu(), reward[idx].detach().cpu(), next_state[idx].detach().cpu(), terminated[idx]))
 
             # Estimate mean
             loss = (per_sample_loss).mean()
@@ -408,13 +403,10 @@ class QLearning():
         for j in tqdm(range(self.episodes)):
 
             # Reset environment (frame_number is stored permanently along all episodes)
-            state, info = self.env.reset(seed=1234)
+            state, info = self.env.reset()
 
             # Reset termination state flag
             terminated = False
-
-            # Reset time out state flag
-            truncated = False
 
             # Helper
             cnt = 0
@@ -423,15 +415,15 @@ class QLearning():
             avg_action_value = 0
 
             # Run training episode until termination
-            while not (terminated):
+            while not terminated:
                 # Sample random action from action space
                 action = self.policy(state, info)
 
                 # Take action in environment and retrieve next state
-                next_state, reward, terminated, truncated, info = self.env.step(action)
+                next_state, reward, terminated, _, info = self.env.step(action)
 
                 # Add experience to replay buffer for experience replay
-                self.experience.push((state.detach().cpu(), action, reward, next_state.detach().cpu(), terminated, truncated))
+                self.experience.push((state.detach().cpu(), action, reward, next_state.detach().cpu(), terminated))
 
                 # Run actual DQN (CNN) training with experience gathered so far
                 self.trainDQN()
@@ -504,11 +496,8 @@ class QLearning():
             # Reset termination state flag
             terminated = False
 
-            # Reset time out state flag
-            truncated = False
-
             # Run training episode until termination
-            while not (terminated or truncated):
+            while not terminated:
                 
                 # Get greedy action from trained DQN
                 with torch.no_grad():
@@ -519,7 +508,7 @@ class QLearning():
                     actions.append(action)
 
                 # Take action in environment and retrieve next state
-                next_state, reward, terminated, truncated, info = self.env.step(action)
+                next_state, reward, terminated, _, info = self.env.step(action)
 
                 # Off policy - Actions taken independently
                 state = next_state
@@ -564,5 +553,5 @@ QL = QLearning(
 
 QL.printDQN()
 
-#QL.runQLearning()
-QL.rollout()
+QL.runQLearning()
+#QL.rollout()
