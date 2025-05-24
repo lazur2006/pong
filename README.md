@@ -4,7 +4,7 @@
 ### Reinforcement Learning (DLMAIRIL01)  
 *Applied Artificial Intelligence*
 
-### Please see line 567 and 568
+### Please see line 556 and 557
 
 (556) #QL.runQLearning()  <-- Comment in for training
 
