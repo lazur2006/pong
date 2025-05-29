@@ -15,4 +15,4 @@
 | **Date**               | May 23, 2025             |
 | **Author**             | **Kai Schiffer**         |
 | **Matriculation No.**  | IU14108163               |
-| **Tutor**              | Dr. Dodiya Janki         |
+| **Tutor**              | Dr. Dodiya Janki, Prof. Dr. Max Pumperla         |
